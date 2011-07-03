@@ -9,13 +9,18 @@
 #import "AdDashDelegate.h"
 #import <CommonCrypto/CommonDigest.h>
 
-#define __AD_DASH_AD_ORIENTATION_LANDSCAPE_WIDTH 310
+#define __AD_DASH_AD_ORIENTATION_LANDSCAPE_WIDTH  310
 #define __AD_DASH_AD_ORIENTATION_LANDSCAPE_HEIGHT 32
-#define __AD_DASH_AD_ORIENTATION_PORTRAIT_WIDTH 310
-#define __AD_DASH_AD_ORIENTATION_PORTRAIT_HEIGHT 32
-#define kSALT @"1app4moreTime@"
+#define __AD_DASH_AD_ORIENTATION_PORTRAIT_WIDTH   310
+#define __AD_DASH_AD_ORIENTATION_PORTRAIT_HEIGHT  32
+#define __AD_DASH_FIRST_RUN_KEY @"adDash.co.has-run-before"
 
 static AdDashDelegate* _instance;
+
+enum {
+    kAdDefaultHeight = 32,
+    kAdDefaultWidth = 310
+};
 
 @implementation AdDashDelegate
 
@@ -25,10 +30,75 @@ static AdDashDelegate* _instance;
 	// cache off the advertiser identifier
 	advertiserIdentifier = [self getAdvertiserIdentifier];
 	
-	// set the static accessor object
+	// set the singleton
 	_instance = self;
 	
+    // see if this is the first app load?
+    if(YES != [[NSUserDefaults standardUserDefaults] boolForKey:__AD_DASH_FIRST_RUN_KEY] )
+    {
+        // ping this event back to adDash, this enables converstion tracking for your ad/promo
+        
+    }
+    
+    // set the first app load 'cookie'
+    [[NSUserDefaults standardUserDefaults] setBool:YES forKey:__AD_DASH_FIRST_RUN_KEY];
+    
 	return self;
+}
+
+- (id) initWithViewForAdDisplay:(UIWebView*)view inParent:(UIView*)parentView {
+    [self init];
+    
+    [self registerViewForAdDisplay:view inParent:parentView];
+    
+    return self;
+}
+
+- (id) initWithViewForAdDisplay:(UIWebView*)view withAdAtLocation:(CGPoint)location inParent:(UIView*)parentView {
+    [self init];
+    
+    [self registerViewForAdDisplay:view withAdAtLocation:location inParent:parentView];
+    
+    return self;
+}
+
+/*
+ Primary method to use, requires no customization.
+ - Pass in the view you want the Ad added to, and it will take care of the rest.
+ - this method will support both portrait and landscape device orientations.
+ - creates the adview, centered on X and with the placement @ enum type
+ - the advertiserId is your unique advertiser ID that you get by creating a free account at www.adDash.co
+ */
+- (id) initInParentView:(UIView*) parentView withPlacement:(int)placement andAdvertiserId:(NSString*)advId {
+    [self init];
+    
+    // store the advertiser Id
+    advertiserIdentifier = advId;
+    // create a UIWebView to add to the parent
+    UIWebView* webview = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, kAdDefaultWidth, kAdDefaultHeight)];
+    // add it to the parent.
+    [parentView addSubview:webview];
+    // get the parent view size
+    CGSize psize = parentView.bounds.size;
+    float yLocation = 0;
+    // determine desired placement
+    switch (placement) {
+        case kAdLocationViewTop:
+            yLocation=kAdDefaultHeight/2;
+            break;
+        case kAdLocationViewBottom:
+            yLocation=psize.height-kAdDefaultHeight;
+            break;
+        case kAdLocationViewCenter:
+            yLocation=psize.height/2;
+            break;
+    }
+    // center the webview
+    webview.center = CGPointMake(psize.width/2 , yLocation);
+    // register it
+    [self registerViewForAdDisplay:webview inParent:parentView];
+    // our work is done here
+    return self;
 }
 
 + (AdDashDelegate*) getInstance {
@@ -59,8 +129,8 @@ static AdDashDelegate* _instance;
 	webViewDelegate.adBannerView = view;
 	
 	// ensure the advertising view - preferred height/width are correct
-	if ([UIDevice currentDevice].orientation == 
-		UIInterfaceOrientationLandscapeLeft || UIInterfaceOrientationLandscapeRight) {
+	if ([UIDevice currentDevice].orientation == UIInterfaceOrientationLandscapeLeft || 
+        [UIDevice currentDevice].orientation == UIInterfaceOrientationLandscapeRight) {
 		
 		// set it at the specified location
 		[view setFrame:CGRectMake(
@@ -216,9 +286,7 @@ static AdDashDelegate* _instance;
 	} else {
 		// Inform the user that the connection failed.
 	}
-	
 	// ignore status and continue
-	
 }
 
 - (void) reportNewGameEvent {
@@ -228,6 +296,15 @@ static AdDashDelegate* _instance;
 - (void) reportFreemiumUpgradeEvent {
 	[self reportEvent:__AD_DASH_EVENT_UPGRADED];
 }
+
+- (void) reportFirstRunEvent {
+	[self reportEvent:__AD_DASH_EVENT_FIRST_RUN];
+}
+
+- (void) reportInAppPurchase {
+	[self reportEvent:__AD_DASH_EVENT_IN_APP_PURCHASE];
+}
+
 
 // URLConnection delegate methods (minimal methods to be functional
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
@@ -246,26 +323,4 @@ static AdDashDelegate* _instance;
 	
 }
 
-
 @end
-
-NSString* md5( NSString *str )
-{
-	const char *cStr = [[str stringByAppendingString:kSALT] UTF8String];
-	
-	unsigned char result[CC_MD5_DIGEST_LENGTH];
-	
-	CC_MD5( cStr, strlen(cStr), result );
-	
-	return [NSString 
-			stringWithFormat: @"%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X%02X",
-			result[0], result[1],
-			result[2], result[3],
-			result[4], result[5],
-			result[6], result[7],
-			result[8], result[9],
-			result[10], result[11],
-			result[12], result[13],
-			result[14], result[15]
-			];
-}
