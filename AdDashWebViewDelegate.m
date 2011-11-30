@@ -16,8 +16,10 @@
 @synthesize dismissButton;
 
 - (id) init {
-	[super init];
-	initialLoad = YES;
+	self = [super init];
+    if (self) {
+        initialLoad = YES;
+    }
 	return self;
 }
 /*
@@ -90,7 +92,7 @@
 	NSRange range = [contents rangeOfString : searchForMe];
 	
 	if (range.location != NSNotFound) {
-		//NSLog(@"Error loading ad.");
+		NSLog(@"Error loading ad.");
 		[self processErrorLoadingWebView];
 	}
 	

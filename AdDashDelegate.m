@@ -7,7 +7,8 @@
 //
 
 #import "AdDashDelegate.h"
-#import <CommonCrypto/CommonDigest.h>
+#import "sys/utsname.h"
+#import "AdExtensions.h"
 
 #define __AD_DASH_AD_ORIENTATION_LANDSCAPE_WIDTH  310
 #define __AD_DASH_AD_ORIENTATION_LANDSCAPE_HEIGHT 32
@@ -24,56 +25,84 @@ enum {
 
 @implementation AdDashDelegate
 
+@synthesize displayAds;
+
 - (id) init {
-	[super init];
+	self = [super init];
+	if (self) {
+        // set the singleton
+        _instance = self;
+        
+        // default to on
+        displayAds = YES;
+    }
 	
-	// cache off the advertiser identifier
-	advertiserIdentifier = [self getAdvertiserIdentifier];
-	
-	// set the singleton
-	_instance = self;
-	
-    // see if this is the first app load?
+	return self;
+}
+
++ (AdDashDelegate*) getInstance {
+    if(_instance)
+        return _instance;
+    
+    @synchronized(self) {
+        if (_instance == NULL) {
+            _instance = [[self alloc] init];
+        }
+    }
+    return _instance;
+}
+
+-(void) checkFirstRun {
     if(YES != [[NSUserDefaults standardUserDefaults] boolForKey:__AD_DASH_FIRST_RUN_KEY] )
     {
-        // ping this event back to adDash, this enables converstion tracking for your ad/promo
+        // ping this event bacdk to adDash, this enables converstion tracking for your ad/promo
+        [self reportFirstRunEvent];
         
+    } else {
+      // if it is there, is it the same value as the current version number?
+        // if it is not, then this is not a first run and is an update
+        // report it as such
+        
+        // Get the current version number from this executable (should be of form 1.x)
+        NSString* currentVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString*)kCFBundleVersionKey];
+        NSString* savedVersion = [[NSUserDefaults standardUserDefaults] objectForKey:(NSString*)kCFBundleVersionKey];
+        
+        // See if there is a version number in the user defaults on this device, and it matches the current version number
+        if ( savedVersion != NULL) {
+            if( savedVersion != currentVersion ) {
+                // if there is NOT, then this is the first launch of this version - track the event
+                [self reportUpgradeEvent];
+            }
+        }
+        // always update the current version
+        [[NSUserDefaults standardUserDefaults] setObject:currentVersion forKey:(NSString*)kCFBundleVersionKey];
     }
     
     // set the first app load 'cookie'
     [[NSUserDefaults standardUserDefaults] setBool:YES forKey:__AD_DASH_FIRST_RUN_KEY];
-    
-	return self;
 }
 
-- (id) initWithViewForAdDisplay:(UIWebView*)view inParent:(UIView*)parentView {
-    [self init];
-    
-    [self registerViewForAdDisplay:view inParent:parentView];
-    
-    return self;
+- (void) setAdvertiserIdentifier:(NSString *)pAdvertiserIdentifier andPrivateKey:(NSString*)pApplicationPrivateKey {
+    applicationPrivateKey = pApplicationPrivateKey;
+    advertiserIdentifier = pAdvertiserIdentifier;
+    [self checkFirstRun];
 }
 
-- (id) initWithViewForAdDisplay:(UIWebView*)view withAdAtLocation:(CGPoint)location inParent:(UIView*)parentView {
-    [self init];
-    
-    [self registerViewForAdDisplay:view withAdAtLocation:location inParent:parentView];
-    
-    return self;
+-(NSString*) getAdvertiserIdentifier {
+    return advertiserIdentifier;
 }
 
+-(NSString*) getApplicationPrivateKey {
+    return applicationPrivateKey;
+}
 /*
  Primary method to use, requires no customization.
  - Pass in the view you want the Ad added to, and it will take care of the rest.
  - this method will support both portrait and landscape device orientations.
  - creates the adview, centered on X and with the placement @ enum type
- - the advertiserId is your unique advertiser ID that you get by creating a free account at www.adDash.co
  */
-- (id) initInParentView:(UIView*) parentView withPlacement:(int)placement andAdvertiserId:(NSString*)advId {
-    [self init];
+- (void) setupInParentView:(UIView*) parentView withPlacement:(int)placement {
     
-    // store the advertiser Id
-    advertiserIdentifier = advId;
     // create a UIWebView to add to the parent
     UIWebView* webview = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, kAdDefaultWidth, kAdDefaultHeight)];
     // add it to the parent.
@@ -98,11 +127,6 @@ enum {
     // register it
     [self registerViewForAdDisplay:webview inParent:parentView];
     // our work is done here
-    return self;
-}
-
-+ (AdDashDelegate*) getInstance {
-	return _instance;
 }
 
 // method to allow a view to be registered to display ads
@@ -128,6 +152,9 @@ enum {
 	// set the banner view in the delegate
 	webViewDelegate.adBannerView = view;
 	
+    // enable orientation tracking
+    [[UIDevice currentDevice ]beginGeneratingDeviceOrientationNotifications];
+    
 	// ensure the advertising view - preferred height/width are correct
 	if ([UIDevice currentDevice].orientation == UIInterfaceOrientationLandscapeLeft || 
         [UIDevice currentDevice].orientation == UIInterfaceOrientationLandscapeRight) {
@@ -210,19 +237,19 @@ enum {
 	return;
 }
 
-- (NSString*) getAdvertiserIdentifier {
-	// TODO: encode or hash this
-	// return the bundle identifier for this application, this will be the advertiser identifier
-	
-	//return md5( [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString*)kCFBundleIdentifierKey] );
+- (NSString*) getAppBundleIdentifier {
 	return [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString*)kCFBundleIdentifierKey];
 }
 
 // method to load the next ad
 // returned Ads can contain 1-3 individual ads
 - (void) getNextAd {
-	// pass the client identifier
-	[webViewDelegate.adBannerView loadRequest:[NSURLRequest requestWithURL:[self buildRequestURL]]];
+    NSMutableDictionary *requestDict = [self buildRequestDictionary];
+    [requestDict setObject:[NSString stringWithFormat:@"%i",__AD_DASH_SERVICE_AD_BLOCK] forKey:@"event"];
+    NSData *postData = [self buildPostData:requestDict];
+    NSMutableURLRequest *urlRequest = [self buildURLRequestWithURL:__AD_DASH_SERVICE_URL bodyData:postData];
+
+	[webViewDelegate.adBannerView loadRequest:urlRequest];
 	
 	// server will 
 	// (1) see if this is an active identifier
@@ -241,12 +268,42 @@ enum {
 	
 }
 
-- (NSString*) buildRequestString {
-	//NSString* deviceUID = md5( [[UIDevice currentDevice] uniqueIdentifier] );
-	NSString* deviceUID = [[UIDevice currentDevice] uniqueIdentifier];
-	NSString* requestString = [__AD_DASH_SERVICE_URL stringByAppendingString:advertiserIdentifier];
-	requestString = [requestString stringByAppendingString:@"&_d="];
+- (NSMutableDictionary*) buildRequestDictionary {
+    struct utsname systemInfo;
+    uname(&systemInfo);
+    NSString* deviceVersion = [[UIDevice currentDevice] systemVersion];
+
+    NSMutableDictionary *requestDict = [NSMutableDictionary dictionary];
+    
+	NSString* deviceUID = [[UIDevice currentDevice] uniqueGlobalDeviceIdentifier];
+	NSString* deviceName = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
+    NSString *unixTimestamp = [NSString stringWithFormat:@"%i",(int)[[NSDate date] timeIntervalSince1970]];
+
+    [requestDict setObject:deviceUID forKey:@"deviceUID"];
+    [requestDict setObject:deviceName forKey:@"deviceName"];
+    [requestDict setObject:deviceVersion forKey:@"deviceVersion"];
+    [requestDict setObject:unixTimestamp forKey:@"timestamp"];    
+    
+	return requestDict;
+}
+/*
+- (NSString*) buildEventRequestString {
+    NSAssert(advertiserIdentifier != nil, @"Attempted to perform action without setting advertiser identifier.");
+    struct utsname systemInfo;
+    uname(&systemInfo);
+    NSString* version = [[UIDevice currentDevice] systemVersion];
+    
+	NSString* deviceUID = [[UIDevice currentDevice] uniqueGlobalDeviceIdentifier];
+	NSString* requestString = [__AD_DASH_EVENT_URL stringByAppendingString:advertiserIdentifier];
+	NSString* deviceName = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
+    
+    requestString = [requestString stringByAppendingString:@"&_d="];
 	requestString = [requestString stringByAppendingString:deviceUID];
+    requestString = [requestString stringByAppendingString:@"&_mod="];
+    requestString = [requestString stringByAppendingString:deviceName];
+    requestString = [requestString stringByAppendingString:@"&_ver="];
+    requestString = [requestString stringByAppendingString:version];
+    
 	return requestString;
 }
 
@@ -256,27 +313,109 @@ enum {
 
 - (NSURL*) buildEventRequestURL:(int)eventType {
 	
-	NSString* requestString = [self buildRequestString];
+	NSString* requestString = [self buildEventRequestString];
 	
 	requestString = [requestString stringByAppendingString:@"&_eid="];
 	requestString = [requestString stringByAppendingString:[[NSNumber numberWithInt:eventType] stringValue]];
-	
+	NSLog(@"Event Request URL: %@",requestString);
 	return [NSURL URLWithString:requestString];
 }
-
+*/
 - (void) dismissAdView {
 	[webViewDelegate.adView setHidden:YES];
 	[dismissButton setHidden:YES];
 }
 
+- (NSString*) buildJsonData:(NSMutableDictionary*)requestDict {
+    //encode our NSMutableDictionary into a post string
+    //THIS DOES NOT HANDLE ENCODINGS PROPERLY RIGHT NOW
+    NSMutableArray *postArray = [NSMutableArray arrayWithCapacity:[requestDict count]];
+    for (id key in requestDict) {
+        [postArray addObject:[NSString stringWithFormat:@"\"%@\":\"%@\"",key,[requestDict valueForKey:key]]];
+    }
+    NSString *jsonString = [postArray componentsJoinedByString:@","];
+    jsonString = [NSString stringWithFormat:@"{%@}",jsonString];
+    return jsonString;
+}
+
+- (NSData*) buildPostData:(NSMutableDictionary*)requestDict {
+    NSAssert(advertiserIdentifier != nil, @"Attempted to perform action without setting advertiser identifier.");
+    NSString *jsonString = [self buildJsonData:requestDict];
+    NSData *someKey = [[NSString stringWithString:[self getApplicationPrivateKey]] dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *hmac = [data dataByHmacSHA256EncryptingWithKey:someKey];
+    NSString *postString = [NSString stringWithFormat:@"bid=%@&advId=%@&payload=%@&signature=%@", [self getAppBundleIdentifier], advertiserIdentifier,[jsonString URLEncodeString],[hmac stringWithHexBytes]];
+    NSLog(@"%@",postString);
+
+    NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
+    return postData;
+}
+
 - (void) reportEvent:(int) type {
-	//NSMutableData*	receivedData;
+	NSMutableDictionary *requestDict = [self buildRequestDictionary];
+    [requestDict setObject:[NSString stringWithFormat:@"%i",type] forKey:@"event"];
+    
+
+    NSData *postData = [self buildPostData:requestDict];
+    // invoke the request to the server
+    NSMutableURLRequest *urlRequest = [self buildURLRequestWithURL:__AD_DASH_EVENT_URL bodyData:postData];
+
+	NSURLConnection *theConnection=[[NSURLConnection alloc] initWithRequest:urlRequest delegate:self startImmediately:YES];
+	if (theConnection) {
+		// Create the NSMutableData to hold the received data.
+		// receivedData is an instance variable declared elsewhere.
+		// receivedData = [[NSMutableData data] retain];
+	} else {
+		// Inform the user that the connection failed.
+	}
+	// ignore status and continue
+}
+
+- (NSMutableURLRequest*) buildURLRequestWithURL:(NSString*)urlString bodyData:(NSData*)bodyData {
+    NSURL* url = [NSURL URLWithString:urlString];
+	NSMutableURLRequest* urlRequest = [NSMutableURLRequest requestWithURL:url];
+    [urlRequest setHTTPMethod:@"POST"];
+    [urlRequest setHTTPBody:bodyData];
+    [urlRequest setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    return urlRequest;
+}
+
+- (NSMutableDictionary*) buildScoreRequestDict:(int)eventType 
+						  score:(NSString*)score 
+				 forPlayerAlias:(NSString*)alias 
+				 withGKPlayerId:(NSString*)playerId 
+				andEmailAddress:(NSString*)email {
 	
-	// construct the event url
-	NSURL* url = [self buildEventRequestURL:type];
+	NSMutableDictionary* requestDict = [self buildRequestDictionary];
 	
-	// invoke the request to the server
-	NSURLRequest* urlRequest = [NSURLRequest requestWithURL:url];
+	if (score==nil) {
+		score=@"";
+	}
+	if (alias==nil) {
+		alias=@"";
+	}
+	if (playerId==nil) {
+		playerId=@"";
+	}
+	if (email==nil) {
+		email=@"";
+	}
+    [requestDict setObject:[NSString stringWithFormat:@"%i",eventType] forKey:@"event"];
+    [requestDict setObject:score forKey:@"score"];
+    [requestDict setObject:alias forKey:@"alias"];
+    [requestDict setObject:playerId forKey:@"playerId"];
+    [requestDict setObject:email forKey:@"email"];
+
+	return requestDict;
+}
+
+- (void) reportScoreEvent:(NSString*) score forPlayerAlias:(NSString*)alias withGKPlayerId:(NSString*)playerId andEmailAddress:(NSString*)email {
+    NSMutableDictionary* requestDict = [self buildScoreRequestDict:__AD_DASH_SCORE_EVENT score:score forPlayerAlias:alias withGKPlayerId:playerId andEmailAddress:email];
+	NSLog(@"Reporting Score Event: %@", requestDict);
+	
+    NSData *postData = [self buildPostData:requestDict];
+    NSMutableURLRequest *urlRequest = [self buildURLRequestWithURL:__AD_DASH_EVENT_URL bodyData:postData];
+
 	
 	NSURLConnection *theConnection=[[NSURLConnection alloc] initWithRequest:urlRequest delegate:self startImmediately:YES];
 	if (theConnection) {
@@ -285,6 +424,7 @@ enum {
 		// receivedData = [[NSMutableData data] retain];
 	} else {
 		// Inform the user that the connection failed.
+        NSLog(@"Communication with the remote server has failed.");
 	}
 	// ignore status and continue
 }
@@ -305,6 +445,9 @@ enum {
 	[self reportEvent:__AD_DASH_EVENT_IN_APP_PURCHASE];
 }
 
+- (void) reportUpgradeEvent {
+	[self reportEvent:__AD_DASH_EVENT_UPGRADE];
+}
 
 // URLConnection delegate methods (minimal methods to be functional
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
