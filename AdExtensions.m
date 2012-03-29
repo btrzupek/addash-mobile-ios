@@ -2,7 +2,7 @@
 //  AdExtensions.m
 //  securesubmission
 //
-//  Created by Paul Kehrer on 8/17/11.
+//  Created by AdDash on 8/17/11.
 //  Copyright (c) 2011 __MyCompanyName__. All rights reserved.
 //
 

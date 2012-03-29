@@ -1,0 +1,522 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		A56594E114E01B3E00A21C82 /* SDK Framework Builder */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = A56594E214E01B3E00A21C82 /* Build configuration list for PBXAggregateTarget "SDK Framework Builder" */;
+			buildPhases = (
+				A56594E514E01B9100A21C82 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = "SDK Framework Builder";
+			productName = "SDK Framework Builder";
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		A565949914E0193400A21C82 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A565949814E0193400A21C82 /* UIKit.framework */; };
+		A565949B14E0193400A21C82 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A565949A14E0193400A21C82 /* Foundation.framework */; };
+		A565949D14E0193400A21C82 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A565949C14E0193400A21C82 /* CoreGraphics.framework */; };
+		A56594A314E0193400A21C82 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A56594A114E0193400A21C82 /* InfoPlist.strings */; };
+		A56594A514E0193400A21C82 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A56594A414E0193400A21C82 /* main.m */; };
+		A56594A914E0193400A21C82 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A56594A814E0193400A21C82 /* AppDelegate.m */; };
+		A56594AC14E0193400A21C82 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A56594AB14E0193400A21C82 /* ViewController.m */; };
+		A56594AF14E0193400A21C82 /* ViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = A56594AD14E0193400A21C82 /* ViewController_iPhone.xib */; };
+		A56594B214E0193400A21C82 /* ViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = A56594B014E0193400A21C82 /* ViewController_iPad.xib */; };
+		A56594D714E01AB500A21C82 /* AdDashBannerViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A56594BA14E0195600A21C82 /* AdDashBannerViewDelegate.m */; };
+		A56594D814E01AB500A21C82 /* AdDashDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A56594BC14E0195600A21C82 /* AdDashDelegate.m */; };
+		A56594D914E01AB500A21C82 /* AdDashAdViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A56594BF14E0195600A21C82 /* AdDashAdViewDelegate.m */; };
+		A56594DA14E01AB500A21C82 /* AdExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = A56594C114E0195600A21C82 /* AdExtensions.m */; };
+		A56594DC14E01ADB00A21C82 /* AdDashBannerViewDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A56594B914E0195600A21C82 /* AdDashBannerViewDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A56594DD14E01ADD00A21C82 /* AdDashDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A56594BB14E0195600A21C82 /* AdDashDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A56594DE14E01ADF00A21C82 /* AdDashInteractionDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A56594BD14E0195600A21C82 /* AdDashInteractionDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A56594DF14E01AE200A21C82 /* AdDashAdViewDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A56594BE14E0195600A21C82 /* AdDashAdViewDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A56594E014E01AE400A21C82 /* AdExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = A56594C014E0195600A21C82 /* AdExtensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A56594F014E047F400A21C82 /* AdDashBannerViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A56594BA14E0195600A21C82 /* AdDashBannerViewDelegate.m */; };
+		A56594F114E047F400A21C82 /* AdDashDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A56594BC14E0195600A21C82 /* AdDashDelegate.m */; };
+		A56594F214E047F400A21C82 /* AdDashAdViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A56594BF14E0195600A21C82 /* AdDashAdViewDelegate.m */; };
+		A56594F314E047F400A21C82 /* AdExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = A56594C114E0195600A21C82 /* AdExtensions.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A565949414E0193400A21C82 /* AdDash Test App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AdDash Test App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A565949814E0193400A21C82 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		A565949A14E0193400A21C82 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		A565949C14E0193400A21C82 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		A56594A014E0193400A21C82 /* AdDash Test App-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "AdDash Test App-Info.plist"; sourceTree = "<group>"; };
+		A56594A214E0193400A21C82 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		A56594A414E0193400A21C82 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		A56594A614E0193400A21C82 /* AdDash Test App-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AdDash Test App-Prefix.pch"; sourceTree = "<group>"; };
+		A56594A714E0193400A21C82 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		A56594A814E0193400A21C82 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		A56594AA14E0193400A21C82 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		A56594AB14E0193400A21C82 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		A56594AE14E0193400A21C82 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController_iPhone.xib; sourceTree = "<group>"; };
+		A56594B114E0193400A21C82 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController_iPad.xib; sourceTree = "<group>"; };
+		A56594B914E0195600A21C82 /* AdDashBannerViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AdDashBannerViewDelegate.h; path = ../../AdDashBannerViewDelegate.h; sourceTree = "<group>"; };
+		A56594BA14E0195600A21C82 /* AdDashBannerViewDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AdDashBannerViewDelegate.m; path = ../../AdDashBannerViewDelegate.m; sourceTree = "<group>"; };
+		A56594BB14E0195600A21C82 /* AdDashDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AdDashDelegate.h; path = ../../AdDashDelegate.h; sourceTree = "<group>"; };
+		A56594BC14E0195600A21C82 /* AdDashDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AdDashDelegate.m; path = ../../AdDashDelegate.m; sourceTree = "<group>"; };
+		A56594BD14E0195600A21C82 /* AdDashInteractionDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AdDashInteractionDelegate.h; path = ../../AdDashInteractionDelegate.h; sourceTree = "<group>"; };
+		A56594BE14E0195600A21C82 /* AdDashAdViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AdDashAdViewDelegate.h; path = ../../AdDashAdViewDelegate.h; sourceTree = "<group>"; };
+		A56594BF14E0195600A21C82 /* AdDashAdViewDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AdDashAdViewDelegate.m; path = ../../AdDashAdViewDelegate.m; sourceTree = "<group>"; };
+		A56594C014E0195600A21C82 /* AdExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AdExtensions.h; path = ../../AdExtensions.h; sourceTree = "<group>"; };
+		A56594C114E0195600A21C82 /* AdExtensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AdExtensions.m; path = ../../AdExtensions.m; sourceTree = "<group>"; };
+		A56594CA14E0197C00A21C82 /* AdDashSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AdDashSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A56594CB14E0197C00A21C82 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		A56594E614E02E5B00A21C82 /* AdDashSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdDashSDK.framework; path = Products/AdDashSDK.framework; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A565949114E0193400A21C82 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A565949914E0193400A21C82 /* UIKit.framework in Frameworks */,
+				A565949B14E0193400A21C82 /* Foundation.framework in Frameworks */,
+				A565949D14E0193400A21C82 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A56594C714E0197B00A21C82 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A565948914E0193400A21C82 = {
+			isa = PBXGroup;
+			children = (
+				A565949E14E0193400A21C82 /* AdDash Test App */,
+				A56594B814E0194300A21C82 /* AdDash SDK */,
+				A565949714E0193400A21C82 /* Frameworks */,
+				A565949514E0193400A21C82 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A565949514E0193400A21C82 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A565949414E0193400A21C82 /* AdDash Test App.app */,
+				A56594CA14E0197C00A21C82 /* AdDashSDK.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A565949714E0193400A21C82 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A56594E614E02E5B00A21C82 /* AdDashSDK.framework */,
+				A565949814E0193400A21C82 /* UIKit.framework */,
+				A565949A14E0193400A21C82 /* Foundation.framework */,
+				A565949C14E0193400A21C82 /* CoreGraphics.framework */,
+				A56594CB14E0197C00A21C82 /* CoreFoundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A565949E14E0193400A21C82 /* AdDash Test App */ = {
+			isa = PBXGroup;
+			children = (
+				A56594A714E0193400A21C82 /* AppDelegate.h */,
+				A56594A814E0193400A21C82 /* AppDelegate.m */,
+				A56594AA14E0193400A21C82 /* ViewController.h */,
+				A56594AB14E0193400A21C82 /* ViewController.m */,
+				A56594AD14E0193400A21C82 /* ViewController_iPhone.xib */,
+				A56594B014E0193400A21C82 /* ViewController_iPad.xib */,
+				A565949F14E0193400A21C82 /* Supporting Files */,
+			);
+			path = "AdDash Test App";
+			sourceTree = "<group>";
+		};
+		A565949F14E0193400A21C82 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				A56594A014E0193400A21C82 /* AdDash Test App-Info.plist */,
+				A56594A114E0193400A21C82 /* InfoPlist.strings */,
+				A56594A414E0193400A21C82 /* main.m */,
+				A56594A614E0193400A21C82 /* AdDash Test App-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		A56594B814E0194300A21C82 /* AdDash SDK */ = {
+			isa = PBXGroup;
+			children = (
+				A56594BE14E0195600A21C82 /* AdDashAdViewDelegate.h */,
+				A56594BF14E0195600A21C82 /* AdDashAdViewDelegate.m */,
+				A56594B914E0195600A21C82 /* AdDashBannerViewDelegate.h */,
+				A56594BA14E0195600A21C82 /* AdDashBannerViewDelegate.m */,
+				A56594BB14E0195600A21C82 /* AdDashDelegate.h */,
+				A56594BC14E0195600A21C82 /* AdDashDelegate.m */,
+				A56594BD14E0195600A21C82 /* AdDashInteractionDelegate.h */,
+				A56594C014E0195600A21C82 /* AdExtensions.h */,
+				A56594C114E0195600A21C82 /* AdExtensions.m */,
+			);
+			name = "AdDash SDK";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		A56594DB14E01AD400A21C82 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A56594DC14E01ADB00A21C82 /* AdDashBannerViewDelegate.h in Headers */,
+				A56594DF14E01AE200A21C82 /* AdDashAdViewDelegate.h in Headers */,
+				A56594E014E01AE400A21C82 /* AdExtensions.h in Headers */,
+				A56594DD14E01ADD00A21C82 /* AdDashDelegate.h in Headers */,
+				A56594DE14E01ADF00A21C82 /* AdDashInteractionDelegate.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		A565949314E0193400A21C82 /* AdDash Test App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A56594B514E0193400A21C82 /* Build configuration list for PBXNativeTarget "AdDash Test App" */;
+			buildPhases = (
+				A565949014E0193400A21C82 /* Sources */,
+				A565949114E0193400A21C82 /* Frameworks */,
+				A565949214E0193400A21C82 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "AdDash Test App";
+			productName = "AdDash Test App";
+			productReference = A565949414E0193400A21C82 /* AdDash Test App.app */;
+			productType = "com.apple.product-type.application";
+		};
+		A56594C914E0197B00A21C82 /* AdDashSDK */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A56594D414E0197C00A21C82 /* Build configuration list for PBXNativeTarget "AdDashSDK" */;
+			buildPhases = (
+				A56594C614E0197B00A21C82 /* Sources */,
+				A56594C714E0197B00A21C82 /* Frameworks */,
+				A56594C814E0197B00A21C82 /* Resources */,
+				A56594DB14E01AD400A21C82 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AdDashSDK;
+			productName = AdDashSDK;
+			productReference = A56594CA14E0197C00A21C82 /* AdDashSDK.framework */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A565948B14E0193400A21C82 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
+			buildConfigurationList = A565948E14E0193400A21C82 /* Build configuration list for PBXProject "AdDash Test App" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = A565948914E0193400A21C82;
+			productRefGroup = A565949514E0193400A21C82 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A565949314E0193400A21C82 /* AdDash Test App */,
+				A56594C914E0197B00A21C82 /* AdDashSDK */,
+				A56594E114E01B3E00A21C82 /* SDK Framework Builder */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A565949214E0193400A21C82 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A56594A314E0193400A21C82 /* InfoPlist.strings in Resources */,
+				A56594AF14E0193400A21C82 /* ViewController_iPhone.xib in Resources */,
+				A56594B214E0193400A21C82 /* ViewController_iPad.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A56594C814E0197B00A21C82 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A56594E514E01B9100A21C82 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Sets the target folders and the final framework product.\nFMK_NAME=AdDashSDK\nFMK_VERSION=A\n\n# Install dir will be the final output to the framework.\n# The following line create it in the root folder of the current project.\nINSTALL_DIR=${SRCROOT}/Products/${FMK_NAME}.framework\n\n# Working dir will be deleted after the framework creation.\nWRK_DIR=build\nDEVICE_DIR=${WRK_DIR}/Release-iphoneos/${FMK_NAME}.framework\nSIMULATOR_DIR=${WRK_DIR}/Release-iphonesimulator/${FMK_NAME}.framework\n\n# Building both architectures.\nxcodebuild -configuration \"Release\" -target \"${FMK_NAME}\" -sdk iphoneos\nxcodebuild -configuration \"Release\" -target \"${FMK_NAME}\" -sdk iphonesimulator\n\n# Cleaning the oldest.\nif [ -d \"${INSTALL_DIR}\" ]\nthen\nrm -rf \"${INSTALL_DIR}\"\nfi\n\n# Creates and renews the final product folder.\nmkdir -p \"${INSTALL_DIR}\"\nmkdir -p \"${INSTALL_DIR}/Versions\"\nmkdir -p \"${INSTALL_DIR}/Versions/${FMK_VERSION}\"\nmkdir -p \"${INSTALL_DIR}/Versions/${FMK_VERSION}/Resources\"\nmkdir -p \"${INSTALL_DIR}/Versions/${FMK_VERSION}/Headers\"\n\n# Creates the internal links.\n# It MUST uses relative path, otherwise will not work when the folder is copied/moved.\nln -s \"${FMK_VERSION}\" \"${INSTALL_DIR}/Versions/Current\"\nln -s \"Versions/Current/Headers\" \"${INSTALL_DIR}/Headers\"\nln -s \"Versions/Current/Resources\" \"${INSTALL_DIR}/Resources\"\nln -s \"Versions/Current/${FMK_NAME}\" \"${INSTALL_DIR}/${FMK_NAME}\"\n\n# Copies the headers and resources files to the final product folder.\ncp -R \"${DEVICE_DIR}/Headers/\" \"${INSTALL_DIR}/Versions/${FMK_VERSION}/Headers/\"\ncp -R \"${DEVICE_DIR}/\" \"${INSTALL_DIR}/Versions/${FMK_VERSION}/Resources/\"\n\n# Removes the binary and header from the resources folder.\nrm -r \"${INSTALL_DIR}/Versions/${FMK_VERSION}/Resources/Headers\" \"${INSTALL_DIR}/Versions/${FMK_VERSION}/Resources/${FMK_NAME}\"\n\n# Uses the Lipo Tool to merge both binary files (i386 + armv6/armv7) into one Universal final product.\nlipo -create \"${DEVICE_DIR}/${FMK_NAME}\" \"${SIMULATOR_DIR}/${FMK_NAME}\" -output \"${INSTALL_DIR}/Versions/${FMK_VERSION}/${FMK_NAME}\"\n\nrm -r \"${WRK_DIR}\"";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A565949014E0193400A21C82 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A56594A514E0193400A21C82 /* main.m in Sources */,
+				A56594A914E0193400A21C82 /* AppDelegate.m in Sources */,
+				A56594AC14E0193400A21C82 /* ViewController.m in Sources */,
+				A56594F014E047F400A21C82 /* AdDashBannerViewDelegate.m in Sources */,
+				A56594F114E047F400A21C82 /* AdDashDelegate.m in Sources */,
+				A56594F214E047F400A21C82 /* AdDashAdViewDelegate.m in Sources */,
+				A56594F314E047F400A21C82 /* AdExtensions.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A56594C614E0197B00A21C82 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A56594D714E01AB500A21C82 /* AdDashBannerViewDelegate.m in Sources */,
+				A56594D814E01AB500A21C82 /* AdDashDelegate.m in Sources */,
+				A56594D914E01AB500A21C82 /* AdDashAdViewDelegate.m in Sources */,
+				A56594DA14E01AB500A21C82 /* AdExtensions.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		A56594A114E0193400A21C82 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A56594A214E0193400A21C82 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		A56594AD14E0193400A21C82 /* ViewController_iPhone.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A56594AE14E0193400A21C82 /* en */,
+			);
+			name = ViewController_iPhone.xib;
+			sourceTree = "<group>";
+		};
+		A56594B014E0193400A21C82 /* ViewController_iPad.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A56594B114E0193400A21C82 /* en */,
+			);
+			name = ViewController_iPad.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		A56594B314E0193400A21C82 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A56594B414E0193400A21C82 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A56594B614E0193400A21C82 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Products\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "AdDash Test App/AdDash Test App-Prefix.pch";
+				INFOPLIST_FILE = "AdDash Test App/AdDash Test App-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		A56594B714E0193400A21C82 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Products\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "AdDash Test App/AdDash Test App-Prefix.pch";
+				INFOPLIST_FILE = "AdDash Test App/AdDash Test App-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		A56594D514E0197C00A21C82 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				INFOPLIST_FILE = "";
+				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)";
+				LINK_WITH_STANDARD_LIBRARIES = NO;
+				MACH_O_TYPE = mh_object;
+				MACOSX_DEPLOYMENT_TARGET = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				VALID_ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Debug;
+		};
+		A56594D614E0197C00A21C82 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEAD_CODE_STRIPPING = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				INFOPLIST_FILE = "";
+				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)";
+				LINK_WITH_STANDARD_LIBRARIES = NO;
+				MACH_O_TYPE = mh_object;
+				MACOSX_DEPLOYMENT_TARGET = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				VALID_ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				WRAPPER_EXTENSION = framework;
+			};
+			name = Release;
+		};
+		A56594E314E01B3E00A21C82 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		A56594E414E01B3E00A21C82 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A565948E14E0193400A21C82 /* Build configuration list for PBXProject "AdDash Test App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A56594B314E0193400A21C82 /* Debug */,
+				A56594B414E0193400A21C82 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A56594B514E0193400A21C82 /* Build configuration list for PBXNativeTarget "AdDash Test App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A56594B614E0193400A21C82 /* Debug */,
+				A56594B714E0193400A21C82 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A56594D414E0197C00A21C82 /* Build configuration list for PBXNativeTarget "AdDashSDK" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A56594D514E0197C00A21C82 /* Debug */,
+				A56594D614E0197C00A21C82 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A56594E214E01B3E00A21C82 /* Build configuration list for PBXAggregateTarget "SDK Framework Builder" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A56594E314E01B3E00A21C82 /* Debug */,
+				A56594E414E01B3E00A21C82 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A565948B14E0193400A21C82 /* Project object */;
+}

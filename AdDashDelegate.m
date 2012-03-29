@@ -10,12 +10,6 @@
 #import "sys/utsname.h"
 #import "AdExtensions.h"
 
-#define __AD_DASH_AD_ORIENTATION_LANDSCAPE_WIDTH  310
-#define __AD_DASH_AD_ORIENTATION_LANDSCAPE_HEIGHT 32
-#define __AD_DASH_AD_ORIENTATION_PORTRAIT_WIDTH   310
-#define __AD_DASH_AD_ORIENTATION_PORTRAIT_HEIGHT  32
-#define __AD_DASH_FIRST_RUN_KEY @"adDash.co.has-run-before"
-
 static AdDashDelegate* _instance;
 
 enum {
@@ -26,6 +20,9 @@ enum {
 @implementation AdDashDelegate
 
 @synthesize displayAds;
+@synthesize sessionIdentifier;
+@synthesize adViewDelegate;
+@synthesize bannerViewDelegate;
 
 - (id) init {
 	self = [super init];
@@ -37,7 +34,11 @@ enum {
         displayAds = YES;
     }
 	
-	return self;
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(getNextAd)
+                                                 name:UIApplicationDidBecomeActiveNotification object:nil];
+	
+    return self;
 }
 
 + (AdDashDelegate*) getInstance {
@@ -47,6 +48,12 @@ enum {
     @synchronized(self) {
         if (_instance == NULL) {
             _instance = [[self alloc] init];
+            // see if we have a previous session identifier
+            _instance.sessionIdentifier = [[NSUserDefaults standardUserDefaults] objectForKey:__AD_DASH_SESSION_ID_KEY];
+            if(Nil == _instance.sessionIdentifier ){
+                // if not, then create one
+                [_instance newSession];
+            }
         }
     }
     return _instance;
@@ -69,9 +76,9 @@ enum {
         
         // See if there is a version number in the user defaults on this device, and it matches the current version number
         if ( savedVersion != NULL) {
-            if( savedVersion != currentVersion ) {
+            if (NSOrderedSame != [savedVersion compare:currentVersion]) {
                 // if there is NOT, then this is the first launch of this version - track the event
-                [self reportUpgradeEvent];
+                [self reportUpgradeEvent: savedVersion to:currentVersion];
             }
         }
         // always update the current version
@@ -105,6 +112,8 @@ enum {
     
     // create a UIWebView to add to the parent
     UIWebView* webview = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, kAdDefaultWidth, kAdDefaultHeight)];
+    // set scaling
+    // [webview setScalesPageToFit:YES];
     // add it to the parent.
     [parentView addSubview:webview];
     // get the parent view size
@@ -147,17 +156,19 @@ enum {
 	adParentView = parentView;
 	
 	// init a web view delegate for this view
-	webViewDelegate = [[AdDashWebViewDelegate alloc] init];
-	
+	adViewDelegate = [[AdDashAdViewDelegate alloc] init];
+	bannerViewDelegate = [[AdDashBannerViewDelegate alloc] init];
+    
 	// set the banner view in the delegate
-	webViewDelegate.adBannerView = view;
+	bannerViewDelegate.myView = view;
 	
     // enable orientation tracking
     [[UIDevice currentDevice ]beginGeneratingDeviceOrientationNotifications];
     
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
 	// ensure the advertising view - preferred height/width are correct
-	if ([UIDevice currentDevice].orientation == UIInterfaceOrientationLandscapeLeft || 
-        [UIDevice currentDevice].orientation == UIInterfaceOrientationLandscapeRight) {
+	if ( orientation == UIInterfaceOrientationLandscapeLeft || 
+        orientation == UIInterfaceOrientationLandscapeRight) {
 		
 		// set it at the specified location
 		[view setFrame:CGRectMake(
@@ -167,11 +178,6 @@ enum {
 					__AD_DASH_AD_ORIENTATION_LANDSCAPE_HEIGHT)];
 		
 		CGRect b = [UIScreen mainScreen].bounds;
-		// 20 px border
-		b.origin.x+=20;
-		b.origin.y+=20;
-		b.size.width-=40;
-		b.size.height-=40;
 		frame = CGRectMake(b.origin.x, b.origin.y, b.size.height, b.size.width);
 		
 	} else {
@@ -183,11 +189,6 @@ enum {
 					__AD_DASH_AD_ORIENTATION_PORTRAIT_HEIGHT)];
 		
 		CGRect b = [UIScreen mainScreen].bounds;
-		// 20 px border
-		b.origin.x+=20;
-		b.origin.y+=20;
-		b.size.width-=40;
-		b.size.height-=40;
 		frame = CGRectMake(b.origin.x, b.origin.y, b.size.width, b.size.height);
 	}
 	
@@ -199,7 +200,7 @@ enum {
 	[self addFullAdViewToView:view inFrame:frame];
 	
 	// set the web delegate
-	view.delegate = webViewDelegate;
+	view.delegate = bannerViewDelegate;
 	
 	// load the initial url
 	[self getNextAd];
@@ -207,38 +208,45 @@ enum {
 	return;
 }
 
+- (void) createDismissbuttonIn:(UIView*)view {	
+	// need to add a control to close the ad display
+	dismissButton = [[UIButton alloc] init];
+	[dismissButton setFrame:CGRectMake(0, 0, 55, 55)];
+	[dismissButton setTitle:@"" forState:UIControlStateNormal];
+	[view addSubview:dismissButton];
+	[dismissButton setHidden:YES];
+	[dismissButton addTarget:self action:@selector(dismissAdView) forControlEvents:UIControlEventTouchUpInside];
+	adViewDelegate.dismissButton = dismissButton;
+}
+
 - (void) addFullAdViewToView:(UIWebView*)view inFrame:(CGRect)frame {
 	
 	// create the view
-	UIWebView* theView = [[UIWebView alloc] init];
+	UIWebView* fullAdView = [[UIWebView alloc] init];
 	
 	// size it
-	[theView setFrame:frame];
+	[fullAdView setFrame:frame];
 	
 	// hide it
-	[theView setHidden:YES];
+	[fullAdView setHidden:YES];
+    
+    // set scaling
+    //[theView setScalesPageToFit:YES];
 	
 	// add the web delegate
-	webViewDelegate.adView = theView;
-	theView.delegate = webViewDelegate;
+	adViewDelegate.myView = fullAdView;
+	fullAdView.delegate = adViewDelegate;
 	
-	// need to add a control to close the ad display
-	dismissButton = [[UIButton alloc] init];
-	[dismissButton setFrame:CGRectMake(0, 0, 35, 35)];
-	[dismissButton setTitle:@"" forState:UIControlStateNormal];
-	[theView addSubview:dismissButton];
-	[dismissButton setHidden:YES];
-	[dismissButton addTarget:self action:@selector(dismissAdView) forControlEvents:UIControlEventTouchUpInside];
-	webViewDelegate.dismissButton = dismissButton;
-	
+    [self createDismissbuttonIn:fullAdView];
+    
 	// Add it to the parent
-	[adParentView addSubview:theView];
+	[adParentView addSubview:fullAdView];
 	
 	return;
 }
 
 - (NSString*) getAppBundleIdentifier {
-	return [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString*)kCFBundleIdentifierKey];
+	return @"com.trzupek.MadLocks";//[[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString*)kCFBundleIdentifierKey];
 }
 
 // method to load the next ad
@@ -248,8 +256,7 @@ enum {
     [requestDict setObject:[NSString stringWithFormat:@"%i",__AD_DASH_SERVICE_AD_BLOCK] forKey:@"event"];
     NSData *postData = [self buildPostData:requestDict];
     NSMutableURLRequest *urlRequest = [self buildURLRequestWithURL:__AD_DASH_SERVICE_URL bodyData:postData];
-
-	[webViewDelegate.adBannerView loadRequest:urlRequest];
+    [bannerViewDelegate.myView loadRequest:urlRequest];
 	
 	// server will 
 	// (1) see if this is an active identifier
@@ -268,6 +275,16 @@ enum {
 	
 }
 
+- (void) getFullAdWithId:(NSString*)adId {
+    NSMutableDictionary *requestDict = [self buildRequestDictionary];
+    [requestDict setObject:[NSString stringWithFormat:@"%i",__AD_DASH_SERVICE_AD] forKey:@"event"];
+    [requestDict setObject:adId forKey:@"ad"];
+    NSData *postData = [self buildPostData:requestDict];
+    NSMutableURLRequest *urlRequest = [self buildURLRequestWithURL:__AD_DASH_SERVICE_URL bodyData:postData];
+    [[adViewDelegate myView] loadRequest:urlRequest];
+    
+}
+
 - (NSMutableDictionary*) buildRequestDictionary {
     struct utsname systemInfo;
     uname(&systemInfo);
@@ -275,54 +292,28 @@ enum {
 
     NSMutableDictionary *requestDict = [NSMutableDictionary dictionary];
     
-	NSString* deviceUID = [[UIDevice currentDevice] uniqueGlobalDeviceIdentifier];
+	NSString* deviceUUID = [[UIDevice currentDevice] uniqueGlobalDeviceIdentifier];
 	NSString* deviceName = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
     NSString *unixTimestamp = [NSString stringWithFormat:@"%i",(int)[[NSDate date] timeIntervalSince1970]];
 
-    [requestDict setObject:deviceUID forKey:@"deviceUID"];
+    [requestDict setObject:deviceUUID forKey:@"deviceUUID"];
     [requestDict setObject:deviceName forKey:@"deviceName"];
     [requestDict setObject:deviceVersion forKey:@"deviceVersion"];
     [requestDict setObject:unixTimestamp forKey:@"timestamp"];    
+    [requestDict setObject:sessionIdentifier forKey:@"sessionUUID"];
     
 	return requestDict;
 }
-/*
-- (NSString*) buildEventRequestString {
-    NSAssert(advertiserIdentifier != nil, @"Attempted to perform action without setting advertiser identifier.");
-    struct utsname systemInfo;
-    uname(&systemInfo);
-    NSString* version = [[UIDevice currentDevice] systemVersion];
-    
-	NSString* deviceUID = [[UIDevice currentDevice] uniqueGlobalDeviceIdentifier];
-	NSString* requestString = [__AD_DASH_EVENT_URL stringByAppendingString:advertiserIdentifier];
-	NSString* deviceName = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
-    
-    requestString = [requestString stringByAppendingString:@"&_d="];
-	requestString = [requestString stringByAppendingString:deviceUID];
-    requestString = [requestString stringByAppendingString:@"&_mod="];
-    requestString = [requestString stringByAppendingString:deviceName];
-    requestString = [requestString stringByAppendingString:@"&_ver="];
-    requestString = [requestString stringByAppendingString:version];
-    
-	return requestString;
-}
 
-- (NSURL*) buildRequestURL {
-	return [NSURL URLWithString:[self buildRequestString]];
-}
-
-- (NSURL*) buildEventRequestURL:(int)eventType {
-	
-	NSString* requestString = [self buildEventRequestString];
-	
-	requestString = [requestString stringByAppendingString:@"&_eid="];
-	requestString = [requestString stringByAppendingString:[[NSNumber numberWithInt:eventType] stringValue]];
-	NSLog(@"Event Request URL: %@",requestString);
-	return [NSURL URLWithString:requestString];
-}
-*/
 - (void) dismissAdView {
-	[webViewDelegate.adView setHidden:YES];
+    [[[AdDashDelegate getInstance] bannerViewDelegate] showView];
+    
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationTransition:UIViewAnimationTransitionCurlUp forView:adViewDelegate.myView cache:YES];
+    [UIView setAnimationDuration: 0.75];
+    [UIView commitAnimations];
+    
+	[adViewDelegate.myView setHidden:YES];
 	[dismissButton setHidden:YES];
 }
 
@@ -345,30 +336,42 @@ enum {
     NSData *data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
     NSData *hmac = [data dataByHmacSHA256EncryptingWithKey:someKey];
     NSString *postString = [NSString stringWithFormat:@"bid=%@&advId=%@&payload=%@&signature=%@", [self getAppBundleIdentifier], advertiserIdentifier,[jsonString URLEncodeString],[hmac stringWithHexBytes]];
+#ifdef DEBUG
     NSLog(@"%@",postString);
-
+#endif
     NSData *postData = [NSData dataWithBytes:[postString UTF8String] length:[postString length]];
     return postData;
 }
 
-- (void) reportEvent:(int) type {
-	NSMutableDictionary *requestDict = [self buildRequestDictionary];
+- (void) reportEvent:(int) type with:(NSMutableDictionary*) customDictionary {
+    NSMutableDictionary *requestDict = [self buildRequestDictionary];
     [requestDict setObject:[NSString stringWithFormat:@"%i",type] forKey:@"event"];
     
-
+    // if they supplied arguments, loop through them and merge them into our request dictionary
+    // (this can override the default fields)
+    if (customDictionary != NULL) {
+        [customDictionary enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+            [requestDict setObject:obj forKey:key];
+        }];
+    }
+    
     NSData *postData = [self buildPostData:requestDict];
     // invoke the request to the server
     NSMutableURLRequest *urlRequest = [self buildURLRequestWithURL:__AD_DASH_EVENT_URL bodyData:postData];
+    
+    NSURLConnection *theConnection=[[NSURLConnection alloc] initWithRequest:urlRequest delegate:self startImmediately:YES];
+    if (theConnection) {
+        // Create the NSMutableData to hold the received data.
+        // receivedData is an instance variable declared elsewhere.
+        // receivedData = [[NSMutableData data] retain];
+    } else {
+        // Inform the user that the connection failed.
+    }
+    // ignore status and continue
+}
 
-	NSURLConnection *theConnection=[[NSURLConnection alloc] initWithRequest:urlRequest delegate:self startImmediately:YES];
-	if (theConnection) {
-		// Create the NSMutableData to hold the received data.
-		// receivedData is an instance variable declared elsewhere.
-		// receivedData = [[NSMutableData data] retain];
-	} else {
-		// Inform the user that the connection failed.
-	}
-	// ignore status and continue
+- (void) reportEvent:(int) type {
+    [self reportEvent:type with:NULL];
 }
 
 - (NSMutableURLRequest*) buildURLRequestWithURL:(NSString*)urlString bodyData:(NSData*)bodyData {
@@ -380,15 +383,8 @@ enum {
     return urlRequest;
 }
 
-- (NSMutableDictionary*) buildScoreRequestDict:(int)eventType 
-						  score:(NSString*)score 
-				 forPlayerAlias:(NSString*)alias 
-				 withGKPlayerId:(NSString*)playerId 
-				andEmailAddress:(NSString*)email {
-	
-	NSMutableDictionary* requestDict = [self buildRequestDictionary];
-	
-	if (score==nil) {
+- (void) reportScoreEvent:(NSString*) score forPlayerAlias:(NSString*)alias withGKPlayerId:(NSString*)playerId andEmailAddress:(NSString*)email {
+    if (score==nil) {
 		score=@"";
 	}
 	if (alias==nil) {
@@ -400,33 +396,14 @@ enum {
 	if (email==nil) {
 		email=@"";
 	}
-    [requestDict setObject:[NSString stringWithFormat:@"%i",eventType] forKey:@"event"];
-    [requestDict setObject:score forKey:@"score"];
-    [requestDict setObject:alias forKey:@"alias"];
-    [requestDict setObject:playerId forKey:@"playerId"];
-    [requestDict setObject:email forKey:@"email"];
-
-	return requestDict;
-}
-
-- (void) reportScoreEvent:(NSString*) score forPlayerAlias:(NSString*)alias withGKPlayerId:(NSString*)playerId andEmailAddress:(NSString*)email {
-    NSMutableDictionary* requestDict = [self buildScoreRequestDict:__AD_DASH_SCORE_EVENT score:score forPlayerAlias:alias withGKPlayerId:playerId andEmailAddress:email];
-	NSLog(@"Reporting Score Event: %@", requestDict);
-	
-    NSData *postData = [self buildPostData:requestDict];
-    NSMutableURLRequest *urlRequest = [self buildURLRequestWithURL:__AD_DASH_EVENT_URL bodyData:postData];
-
-	
-	NSURLConnection *theConnection=[[NSURLConnection alloc] initWithRequest:urlRequest delegate:self startImmediately:YES];
-	if (theConnection) {
-		// Create the NSMutableData to hold the received data.
-		// receivedData is an instance variable declared elsewhere.
-		// receivedData = [[NSMutableData data] retain];
-	} else {
-		// Inform the user that the connection failed.
-        NSLog(@"Communication with the remote server has failed.");
-	}
-	// ignore status and continue
+    
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:4];
+    [dict setObject:score forKey:@"score"];
+    [dict setObject:alias forKey:@"alias"];
+    [dict setObject:playerId forKey:@"playerId"];
+    [dict setObject:email forKey:@"email"];
+    
+    [self reportEvent:__AD_DASH_SCORE_EVENT with:dict];
 }
 
 - (void) reportNewGameEvent {
@@ -445,8 +422,34 @@ enum {
 	[self reportEvent:__AD_DASH_EVENT_IN_APP_PURCHASE];
 }
 
-- (void) reportUpgradeEvent {
-	[self reportEvent:__AD_DASH_EVENT_UPGRADE];
+- (void) reportUpgradeEvent:(NSString*) fromVersion to:(NSString*) toVersion {
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:2];
+    [dict setObject:fromVersion forKey:@"fromVersion"];
+    [dict setObject:toVersion forKey:@"appVersion"];
+	[self reportEvent:__AD_DASH_EVENT_UPGRADE with:dict];
+}
+
+- (void) reportAppLinkEvent:(NSString*) adId {
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:1];
+    [dict setObject:adId forKey:@"ad"];
+	[self reportEvent:__AD_DASH_EVENT_APP_LINK with:dict];
+}
+
+// report your own custom event
+- (void) reportCustomEvent:(NSString*) customType withDetail:(NSString *)detail {
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:2];
+    [dict setObject:customType forKey:@"customType"];
+    [dict setObject:detail forKey:@"detail"];
+    [self reportEvent:__AD_DASH_CUSTOM_EVENT with:dict];
+}
+
+// report the user like of an ad
+- (void) reportLikeAd {
+    [self reportEvent:__AD_DASH_EVENT_LIKE_AD];
+}
+// report the user dislike of an ad
+- (void) reportDislikeAd {
+    [self reportEvent:__AD_DASH_EVENT_DISLIKE_AD];
 }
 
 // URLConnection delegate methods (minimal methods to be functional
@@ -466,4 +469,18 @@ enum {
 	
 }
 
+- (NSString*) generateSessionId {
+    return [[NSProcessInfo processInfo] globallyUniqueString];
+}
+
+- (NSString*)newSession{
+    sessionIdentifier = [self generateSessionId];
+    [[NSUserDefaults standardUserDefaults] setObject:sessionIdentifier forKey:(NSString*)__AD_DASH_SESSION_ID_KEY];
+    return sessionIdentifier;
+}
+
+- (void) dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [super dealloc];
+}
 @end
