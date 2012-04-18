@@ -36,9 +36,10 @@
     [self.window makeKeyAndVisible];
     
     //[[AdDashDelegate getInstance] setAdvertiserIdentifier:@"insert-your-identifier-here" andPrivateKey:@"insert-your-key-here"];
-    [[AdDashDelegate getInstance] setAdvertiserIdentifier:@"*209d5fae8b2ba427d30650dd0250942ae944a0d5" andPrivateKey:@"b9145480-03de-11e1-958b-99e82af5853e"];
-    [[AdDashDelegate getInstance] setDisplayAds:YES];
-    [[AdDashDelegate getInstance] setupInParentView:self.viewController.view withPlacement:kAdLocationViewTop];
+    [AdDashDelegate setAdvertiserIdentifier:@"6bd50c40-6950-11e1-9f33-c938e9104dee" andPrivateKey:@"367e0400-87df-11e1-ad6f-c571722779e8"];
+//    [AdDashDelegate setDisplayAds:YES];
+    [AdDashDelegate setupInParentView:self.viewController.view withPlacement:kAdLocationViewTop];
+    [AdDashDelegate reportCustomEvent:@"testing custom event" withDetail:@"test app"];
     
     return YES;
 }

@@ -109,7 +109,7 @@
         
         if (range.location != NSNotFound) {
             // report the event
-            [[AdDashDelegate getInstance] reportAppLinkEvent:self.currentAdId];
+            [AdDashDelegate reportAppLinkEvent:self.currentAdId];
             // load itunes view
             //[adView loadRequest:request];
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString: self.clientAdRequstURL]];

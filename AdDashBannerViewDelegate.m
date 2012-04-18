@@ -89,7 +89,7 @@
             NSLog(@"The requested ad id: %@", adId);
 #endif
             // load the ad
-            [delegate getFullAdWithId:adId];
+            [AdDashDelegate getFullAdWithId:adId];
             // show the ad
             [[delegate adViewDelegate] showAd:adId];
             return NO;

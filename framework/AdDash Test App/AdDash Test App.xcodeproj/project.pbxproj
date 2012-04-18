@@ -11,7 +11,7 @@
 			isa = PBXAggregateTarget;
 			buildConfigurationList = A56594E214E01B3E00A21C82 /* Build configuration list for PBXAggregateTarget "SDK Framework Builder" */;
 			buildPhases = (
-				A56594E514E01B9100A21C82 /* ShellScript */,
+				A56594E514E01B9100A21C82 /* Run Script */,
 			);
 			dependencies = (
 			);
@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		80BBB8CE153E37780071DC2A /* AdDashSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A56594E614E02E5B00A21C82 /* AdDashSDK.framework */; };
 		A565949914E0193400A21C82 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A565949814E0193400A21C82 /* UIKit.framework */; };
 		A565949B14E0193400A21C82 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A565949A14E0193400A21C82 /* Foundation.framework */; };
 		A565949D14E0193400A21C82 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A565949C14E0193400A21C82 /* CoreGraphics.framework */; };
@@ -39,10 +40,6 @@
 		A56594DE14E01ADF00A21C82 /* AdDashInteractionDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A56594BD14E0195600A21C82 /* AdDashInteractionDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A56594DF14E01AE200A21C82 /* AdDashAdViewDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = A56594BE14E0195600A21C82 /* AdDashAdViewDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A56594E014E01AE400A21C82 /* AdExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = A56594C014E0195600A21C82 /* AdExtensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A56594F014E047F400A21C82 /* AdDashBannerViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A56594BA14E0195600A21C82 /* AdDashBannerViewDelegate.m */; };
-		A56594F114E047F400A21C82 /* AdDashDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A56594BC14E0195600A21C82 /* AdDashDelegate.m */; };
-		A56594F214E047F400A21C82 /* AdDashAdViewDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A56594BF14E0195600A21C82 /* AdDashAdViewDelegate.m */; };
-		A56594F314E047F400A21C82 /* AdExtensions.m in Sources */ = {isa = PBXBuildFile; fileRef = A56594C114E0195600A21C82 /* AdExtensions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -82,6 +79,7 @@
 				A565949914E0193400A21C82 /* UIKit.framework in Frameworks */,
 				A565949B14E0193400A21C82 /* Foundation.framework in Frameworks */,
 				A565949D14E0193400A21C82 /* CoreGraphics.framework in Frameworks */,
+				80BBB8CE153E37780071DC2A /* AdDashSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -226,7 +224,7 @@
 		A565948B14E0193400A21C82 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 			};
 			buildConfigurationList = A565948E14E0193400A21C82 /* Build configuration list for PBXProject "AdDash Test App" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -268,13 +266,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		A56594E514E01B9100A21C82 /* ShellScript */ = {
+		A56594E514E01B9100A21C82 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -291,10 +290,6 @@
 				A56594A514E0193400A21C82 /* main.m in Sources */,
 				A56594A914E0193400A21C82 /* AppDelegate.m in Sources */,
 				A56594AC14E0193400A21C82 /* ViewController.m in Sources */,
-				A56594F014E047F400A21C82 /* AdDashBannerViewDelegate.m in Sources */,
-				A56594F114E047F400A21C82 /* AdDashDelegate.m in Sources */,
-				A56594F214E047F400A21C82 /* AdDashAdViewDelegate.m in Sources */,
-				A56594F314E047F400A21C82 /* AdExtensions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -421,11 +416,14 @@
 				COPY_PHASE_STRIP = YES;
 				DEAD_CODE_STRIPPING = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
+				GCC_THUMB_SUPPORT = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				INFOPLIST_FILE = "";
 				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LINK_WITH_STANDARD_LIBRARIES = NO;
 				MACH_O_TYPE = mh_object;
 				MACOSX_DEPLOYMENT_TARGET = "";
@@ -433,7 +431,6 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Debug;
@@ -446,11 +443,14 @@
 				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "";
+				GCC_THUMB_SUPPORT = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				INFOPLIST_FILE = "";
 				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				LINK_WITH_STANDARD_LIBRARIES = NO;
 				MACH_O_TYPE = mh_object;
 				MACOSX_DEPLOYMENT_TARGET = "";
@@ -458,7 +458,6 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Release;

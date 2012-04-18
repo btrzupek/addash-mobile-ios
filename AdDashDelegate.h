@@ -10,8 +10,8 @@
 #import "AdDashAdViewDelegate.h"
 #import "AdDashBannerViewDelegate.h"
 
-#define __AD_DASH_SERVICE_URL       @"http://www.addash.co/ad-srv.php"
-#define __AD_DASH_EVENT_URL         @"http://www.addash.co/ad-srv.php"
+#define __AD_DASH_SERVICE_URL       @"http://api-v1.addash.co/ad-srv.php"
+#define __AD_DASH_EVENT_URL         @"http://api-v1.addash.co/ad-srv.php"
 #define __AD_DASH_SERVICE_AD_BLOCK  0 // retrieve 3 ad blocks for rotation
 #define __AD_DASH_EVENT_NEW_GAME    1 // new game event
 #define __AD_DASH_EVENT_WON_GAME    2 // won game event
@@ -63,18 +63,22 @@ enum {
 - (NSString*) getAdvertiserIdentifier;
 - (NSString*) getApplicationPrivateKey;
 
-- (void) setAdvertiserIdentifier:(NSString *)pAdvertiserIdentifier andPrivateKey:(NSString*)pApplicationPrivateKey;
++(BOOL) getDisplayAds;
++(void) setDisplayAds:(BOOL)display;
 
-- (void) setupInParentView:(UIView*) parentView withPlacement:(int)placement;
 
-- (void) registerViewForAdDisplay:(UIWebView*)view inParent:(UIView*)parentView;
-- (void) registerViewForAdDisplay:(UIWebView*)view withAdAtLocation:(CGPoint)location inParent:(UIView*)parentView;
++ (void) setAdvertiserIdentifier:(NSString *)pAdvertiserIdentifier andPrivateKey:(NSString*)pApplicationPrivateKey;
 
-- (void) addFullAdViewToView:(UIWebView*)view inFrame:(CGRect)frame;
++ (void) setupInParentView:(UIView*) parentView withPlacement:(int)placement;
 
-- (void) getNextAd;
-- (void) dismissAdView;
-- (void) getFullAdWithId:(NSString*)adId;
++ (void) registerViewForAdDisplay:(UIWebView*)view inParent:(UIView*)parentView;
++ (void) registerViewForAdDisplay:(UIWebView*)view withAdAtLocation:(CGPoint)location inParent:(UIView*)parentView;
+
++ (void) addFullAdViewToView:(UIWebView*)view inFrame:(CGRect)frame;
+
++ (void) getNextAd;
++ (void) dismissAdView;
++ (void) getFullAdWithId:(NSString*)adId;
 
 - (NSData*) buildPostData:(NSMutableDictionary*)requestDict;
 - (NSMutableDictionary*) buildRequestDictionary;
@@ -84,23 +88,23 @@ enum {
 // event reporting
 
 // call this to report that the user has started a new game
-- (void) reportNewGameEvent;
++ (void) reportNewGameEvent;
 // call this if you had a fremium upgrade
-- (void) reportFreemiumUpgradeEvent;
++ (void) reportFreemiumUpgradeEvent;
 // call this if you know this is the first run of the app (handled automatically by the framework)
-- (void) reportFirstRunEvent;
++ (void) reportFirstRunEvent;
 // call this if the user made an in app purchase you want 
 // to track (or call reportEvent with a custom code for 
 // individual app purchases and their tracking
-- (void) reportInAppPurchase;
++ (void) reportInAppPurchase;
 // Regular upgrade event. version to version, not free to pay
-- (void) reportUpgradeEvent:(NSString*) fromVersion to:(NSString*) toVersion;
++ (void) reportUpgradeEvent:(NSString*) fromVersion to:(NSString*) toVersion;
 // report scoring to remote server
-- (void) reportScoreEvent:(NSString*) score forPlayerAlias:(NSString*)alias withGKPlayerId:(NSString*)playerId andEmailAddress:(NSString*)email;
++ (void) reportScoreEvent:(NSString*) score forPlayerAlias:(NSString*)alias withGKPlayerId:(NSString*)playerId andEmailAddress:(NSString*)email;
 // report when an ad link is clicked for a download action
-- (void) reportAppLinkEvent:(NSString*) adId;
++ (void) reportAppLinkEvent:(NSString*) adId;
 // report your own custom event
-- (void) reportCustomEvent:(NSString*) customType withDetail:(NSString *) detail;
++ (void) reportCustomEvent:(NSString*) customType withDetail:(NSString *) detail;
 // analytics session reset method
 - (NSString*) newSession;
 // report the user like of an ad

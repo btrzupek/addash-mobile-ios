@@ -9,12 +9,12 @@ Once you have an AdDash account you will need to login to the portal and copy an
 your Advertiser Identifier and your Application Private Key into the objective-c initializer 
 for AdDash in your app. That looks something like this:
 
- [[AdDashDelegate getInstance] setAdvertiserIdentifier:@"paste id here" andPrivateKey:@"paste key here"];
+ [AdDashDelegate setAdvertiserIdentifier:@"paste id here" andPrivateKey:@"paste key here"];
 
 The above code will allow your App to participate in full application lifecycle event tracking. If that is all you are here for, you are done! If not, continue on soldier...
 To enable App promotion (running ads for your own apps) you will need to tell AdDash to turn that on in your app. You can do that as follows:
 
- [[AdDashDelegate getInstance] setDisplayAds:YES];
- [[AdDashDelegate getInstance] setupInParentView:viewController.view withPlacement:kAdLocationViewTop];
+ [AdDashDelegate setDisplayAds:YES];
+ [AdDashDelegate setupInParentView:viewController.view withPlacement:kAdLocationViewTop];
 
 (6) Rock on.

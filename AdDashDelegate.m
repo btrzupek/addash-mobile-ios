@@ -10,8 +10,6 @@
 #import "sys/utsname.h"
 #import "AdExtensions.h"
 
-static AdDashDelegate* _instance;
-
 enum {
     kAdDefaultHeight = 32,
     kAdDefaultWidth = 310
@@ -26,38 +24,108 @@ enum {
 
 - (id) init {
 	self = [super init];
-	if (self) {
-        // set the singleton
-        _instance = self;
+	if (self) {        
+        // default to off
+        displayAds = NO;
         
-        // default to on
-        displayAds = YES;
-    }
-	
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(getNextAd)
-                                                 name:UIApplicationDidBecomeActiveNotification object:nil];
-	
+        sessionIdentifier = [[NSUserDefaults standardUserDefaults] objectForKey:__AD_DASH_SESSION_ID_KEY];
+        if (sessionIdentifier == nil) {
+            [self newSession];
+        }
+    }	
     return self;
 }
 
 + (AdDashDelegate*) getInstance {
-    if(_instance)
-        return _instance;
-    
-    @synchronized(self) {
-        if (_instance == NULL) {
-            _instance = [[self alloc] init];
-            // see if we have a previous session identifier
-            _instance.sessionIdentifier = [[NSUserDefaults standardUserDefaults] objectForKey:__AD_DASH_SESSION_ID_KEY];
-            if(Nil == _instance.sessionIdentifier ){
-                // if not, then create one
-                [_instance newSession];
-            }
-        }
-    }
-    return _instance;
+    static AdDashDelegate *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [[AdDashDelegate alloc] init];
+    });
+    return instance;
 }
+
++(void) setAdvertiserIdentifier:(NSString *)pAdvertiserIdentifier andPrivateKey:(NSString *)pApplicationPrivateKey {
+    [[AdDashDelegate getInstance] setAdvertiserIdentifier:pAdvertiserIdentifier andPrivateKey:pApplicationPrivateKey];
+}
+
++(void) setupInParentView:(UIView*) parentView withPlacement:(int)placement {
+    [[AdDashDelegate getInstance] setupInParentView:parentView withPlacement:placement];
+}
+
++(void) registerViewForAdDisplay:(UIWebView *)view inParent:(UIView *)parentView {
+    [[AdDashDelegate getInstance] registerViewForAdDisplay:view inParent:parentView];
+}
+
++(void) registerViewForAdDisplay:(UIWebView *)view withAdAtLocation:(CGPoint)location inParent:(UIView *)parentView {
+    [[AdDashDelegate getInstance] registerViewForAdDisplay:view withAdAtLocation:location inParent:parentView];
+}
+
++(void) reportCustomEvent:(NSString *)customType withDetail:(NSString *)detail {
+    [[AdDashDelegate getInstance] reportCustomEvent:customType withDetail:detail];
+}
+
++(void) addFullAdViewToView:(UIWebView *)view inFrame:(CGRect)frame {
+    [[AdDashDelegate getInstance] addFullAdViewToView:view inFrame:frame];
+}
+
++(void) reportFirstRunEvent {
+    [[AdDashDelegate getInstance] reportFirstRunEvent];
+}
+
++(void) reportNewGameEvent {
+    [[AdDashDelegate getInstance] reportNewGameEvent];
+}
+
++(void) reportFreemiumUpgradeEvent {
+    [[AdDashDelegate getInstance] reportFreemiumUpgradeEvent];
+}
+
++(void) reportInAppPurchase {
+    [[AdDashDelegate getInstance] reportInAppPurchase];
+}
+
++(void) reportUpgradeEvent:(NSString *)fromVersion to:(NSString *)toVersion {
+    [[AdDashDelegate getInstance] reportUpgradeEvent:fromVersion to:toVersion];
+}
+
++(void) reportScoreEvent:(NSString *)score forPlayerAlias:(NSString *)alias withGKPlayerId:(NSString *)playerId andEmailAddress:(NSString *)email {
+    [[AdDashDelegate getInstance] reportScoreEvent:score forPlayerAlias:alias withGKPlayerId:playerId andEmailAddress:email];
+}
+
++(void) reportAppLinkEvent:(NSString *)adId {
+    [[AdDashDelegate getInstance] reportAppLinkEvent:adId];
+}
+
++(BOOL) getDisplayAds {
+    return [AdDashDelegate getInstance].displayAds;
+}
+
++(void) setDisplayAds:(BOOL)display {
+    if (display) {
+        //remove any observer so we don't get duplicates
+        [[NSNotificationCenter defaultCenter] removeObserver:[AdDashDelegate getInstance]];
+        [[NSNotificationCenter defaultCenter] addObserver:[AdDashDelegate getInstance]
+                                                 selector:@selector(getNextAd)
+                                                     name:UIApplicationDidBecomeActiveNotification object:nil];
+    } else {
+        [[NSNotificationCenter defaultCenter] removeObserver:[AdDashDelegate getInstance]];
+    }
+    [AdDashDelegate getInstance].displayAds = display;
+}
+
++(void) getNextAd {
+    [[AdDashDelegate getInstance] getNextAd];
+}
+
++(void) dismissAdView {
+    [[AdDashDelegate getInstance] dismissAdView];
+}
+
++(void) getFullAdWithId:(NSString *)adId {
+    [[AdDashDelegate getInstance] getFullAdWithId:adId];
+}
+
 
 -(void) checkFirstRun {
     if(YES != [[NSUserDefaults standardUserDefaults] boolForKey:__AD_DASH_FIRST_RUN_KEY] )
@@ -109,6 +177,8 @@ enum {
  - creates the adview, centered on X and with the placement @ enum type
  */
 - (void) setupInParentView:(UIView*) parentView withPlacement:(int)placement {
+    //if you want to set up ads, you probably want to display them. Let's make sure that's true
+    [AdDashDelegate setDisplayAds:YES];
     
     // create a UIWebView to add to the parent
     UIWebView* webview = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, kAdDefaultWidth, kAdDefaultHeight)];
@@ -246,7 +316,7 @@ enum {
 }
 
 - (NSString*) getAppBundleIdentifier {
-	return @"com.trzupek.MadLocks";//[[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString*)kCFBundleIdentifierKey];
+	return [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString*)kCFBundleIdentifierKey];
 }
 
 // method to load the next ad
