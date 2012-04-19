@@ -59,30 +59,12 @@ enum {
 
 + (AdDashDelegate*) getInstance;
 
-- (NSString*) getAppBundleIdentifier;
-- (NSString*) getAdvertiserIdentifier;
-- (NSString*) getApplicationPrivateKey;
-
-+(BOOL) getDisplayAds;
-+(void) setDisplayAds:(BOOL)display;
-
-
 + (void) setAdvertiserIdentifier:(NSString *)pAdvertiserIdentifier andPrivateKey:(NSString*)pApplicationPrivateKey;
-
 + (void) setupInParentView:(UIView*) parentView withPlacement:(int)placement;
-
 + (void) registerViewForAdDisplay:(UIWebView*)view inParent:(UIView*)parentView;
 + (void) registerViewForAdDisplay:(UIWebView*)view withAdAtLocation:(CGPoint)location inParent:(UIView*)parentView;
-
-+ (void) addFullAdViewToView:(UIWebView*)view inFrame:(CGRect)frame;
-
-+ (void) getNextAd;
-+ (void) dismissAdView;
 + (void) getFullAdWithId:(NSString*)adId;
-
-- (NSData*) buildPostData:(NSMutableDictionary*)requestDict;
-- (NSMutableDictionary*) buildRequestDictionary;
-- (NSMutableURLRequest*) buildURLRequestWithURL:(NSString*)urlString bodyData:(NSData*)bodyData;
++ (void) dismissAdView;
 
 // EVENTS - calling these, or creating your own allows you to gather statistics in the adDash console at www.adDash.co
 // event reporting
@@ -105,12 +87,12 @@ enum {
 + (void) reportAppLinkEvent:(NSString*) adId;
 // report your own custom event
 + (void) reportCustomEvent:(NSString*) customType withDetail:(NSString *) detail;
-// analytics session reset method
-- (NSString*) newSession;
 // report the user like of an ad
-- (void) reportLikeAd;
++ (void) reportLikeAd;
 // report the user dislike of an ad
-- (void) reportDislikeAd;
++ (void) reportDislikeAd;
+// analytics session reset method
++ (NSString*) newSession;
 @end
 
 // NSString* md5( NSString *str );

@@ -15,6 +15,24 @@ enum {
     kAdDefaultWidth = 310
 };
 
+@interface AdDashDelegate (PrivateMethods)
+
+- (NSString*) getAppBundleIdentifier;
+- (NSString*) getAdvertiserIdentifier;
+- (NSString*) getApplicationPrivateKey;
+
++(BOOL) getDisplayAds;
++(void) setDisplayAds:(BOOL)display;
++(void) addFullAdViewToView:(UIWebView*)view inFrame:(CGRect)frame;
++(void) getNextAd;
+
+- (NSData*) buildPostData:(NSMutableDictionary*)requestDict;
+- (NSMutableDictionary*) buildRequestDictionary;
+- (NSMutableURLRequest*) buildURLRequestWithURL:(NSString*)urlString bodyData:(NSData*)bodyData;
+- (NSString*) newSession;
+
+@end
+
 @implementation AdDashDelegate
 
 @synthesize displayAds;
@@ -95,6 +113,18 @@ enum {
 
 +(void) reportAppLinkEvent:(NSString *)adId {
     [[AdDashDelegate getInstance] reportAppLinkEvent:adId];
+}
+
++(void) reportLikeAd {
+    [[AdDashDelegate getInstance] reportLikeAd];
+}
+
++(void) reportDislikeAd {
+    [[AdDashDelegate getInstance] reportDislikeAd];
+}
+
++ (NSString*)newSession{
+    return [[AdDashDelegate getInstance] newSession];
 }
 
 +(BOOL) getDisplayAds {
