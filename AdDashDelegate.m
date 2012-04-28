@@ -29,7 +29,7 @@ enum {
 - (NSData*) buildPostData:(NSMutableDictionary*)requestDict;
 - (NSMutableDictionary*) buildRequestDictionary;
 - (NSMutableURLRequest*) buildURLRequestWithURL:(NSString*)urlString bodyData:(NSData*)bodyData;
-- (NSString*) newSession;
+- (void) newSession;
 
 @end
 
@@ -45,13 +45,30 @@ enum {
 	if (self) {        
         // default to off
         displayAds = NO;
-        
-        sessionIdentifier = [[NSUserDefaults standardUserDefaults] objectForKey:__AD_DASH_SESSION_ID_KEY];
-        if (sessionIdentifier == nil) {
-            [self newSession];
-        }
+        //create a new session. after init the startHandler will create new sessions whenever the app is brought from background to foreground
+        [self newSession];
+        [self addSessionObservers];
     }	
     return self;
+}
+
+-(void) addSessionObservers {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startHandler) name:UIApplicationDidBecomeActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(endHandler) name:UIApplicationWillResignActiveNotification object:nil];
+}
+
+
+-(void) endHandler {
+	[self reportEvent:__AD_DASH_EVENT_SESSION_END];
+}
+
+-(void) startHandler {
+    [self newSession];
+
+    if (self.displayAds) {
+        [self getNextAd];
+    }
+	[self reportEvent:__AD_DASH_EVENT_SESSION_START];
 }
 
 + (AdDashDelegate*) getInstance {
@@ -123,8 +140,8 @@ enum {
     [[AdDashDelegate getInstance] reportDislikeAd];
 }
 
-+ (NSString*)newSession{
-    return [[AdDashDelegate getInstance] newSession];
++ (void)newSession{
+    [[AdDashDelegate getInstance] newSession];
 }
 
 +(BOOL) getDisplayAds {
@@ -132,15 +149,6 @@ enum {
 }
 
 +(void) setDisplayAds:(BOOL)display {
-    if (display) {
-        //remove any observer so we don't get duplicates
-        [[NSNotificationCenter defaultCenter] removeObserver:[AdDashDelegate getInstance]];
-        [[NSNotificationCenter defaultCenter] addObserver:[AdDashDelegate getInstance]
-                                                 selector:@selector(getNextAd)
-                                                     name:UIApplicationDidBecomeActiveNotification object:nil];
-    } else {
-        [[NSNotificationCenter defaultCenter] removeObserver:[AdDashDelegate getInstance]];
-    }
     [AdDashDelegate getInstance].displayAds = display;
 }
 
@@ -395,12 +403,17 @@ enum {
 	NSString* deviceUUID = [[UIDevice currentDevice] uniqueGlobalDeviceIdentifier];
 	NSString* deviceName = [NSString stringWithCString:systemInfo.machine encoding:NSUTF8StringEncoding];
     NSString *unixTimestamp = [NSString stringWithFormat:@"%i",(int)[[NSDate date] timeIntervalSince1970]];
+    
+    NSString *shortVersion = [[[NSBundle mainBundle] infoDictionary] valueForKey:@"CFBundleShortVersionString"];
+    NSString *bundleVersion = [[[NSBundle mainBundle] infoDictionary] valueForKey:@"CFBundleVersion"];
 
     [requestDict setObject:deviceUUID forKey:@"deviceUUID"];
     [requestDict setObject:deviceName forKey:@"deviceName"];
     [requestDict setObject:deviceVersion forKey:@"deviceVersion"];
     [requestDict setObject:unixTimestamp forKey:@"timestamp"];    
-    [requestDict setObject:sessionIdentifier forKey:@"sessionUUID"];
+    [requestDict setObject:self.sessionIdentifier forKey:@"sessionUUID"];
+    [requestDict setObject:shortVersion forKey:@"bundle-short-version"];
+    [requestDict setObject:bundleVersion forKey:@"bundle-version"];
     
 	return requestDict;
 }
@@ -458,16 +471,9 @@ enum {
     NSData *postData = [self buildPostData:requestDict];
     // invoke the request to the server
     NSMutableURLRequest *urlRequest = [self buildURLRequestWithURL:__AD_DASH_EVENT_URL bodyData:postData];
-    
-    NSURLConnection *theConnection=[[NSURLConnection alloc] initWithRequest:urlRequest delegate:self startImmediately:YES];
-    if (theConnection) {
-        // Create the NSMutableData to hold the received data.
-        // receivedData is an instance variable declared elsewhere.
-        // receivedData = [[NSMutableData data] retain];
-    } else {
-        // Inform the user that the connection failed.
-    }
-    // ignore status and continue
+
+    NSURLConnection *conn = [NSURLConnection connectionWithRequest:urlRequest delegate:self];
+    [conn start];
 }
 
 - (void) reportEvent:(int) type {
@@ -573,10 +579,8 @@ enum {
     return [[NSProcessInfo processInfo] globallyUniqueString];
 }
 
-- (NSString*)newSession{
-    sessionIdentifier = [self generateSessionId];
-    [[NSUserDefaults standardUserDefaults] setObject:sessionIdentifier forKey:(NSString*)__AD_DASH_SESSION_ID_KEY];
-    return sessionIdentifier;
+- (void)newSession{
+    self.sessionIdentifier = [self generateSessionId];
 }
 
 - (void) dealloc {

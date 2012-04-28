@@ -10,21 +10,23 @@
 #import "AdDashAdViewDelegate.h"
 #import "AdDashBannerViewDelegate.h"
 
-#define __AD_DASH_SERVICE_URL       @"http://api-v1.addash.co/ad-srv.php"
-#define __AD_DASH_EVENT_URL         @"http://api-v1.addash.co/ad-srv.php"
-#define __AD_DASH_SERVICE_AD_BLOCK  0 // retrieve 3 ad blocks for rotation
-#define __AD_DASH_EVENT_NEW_GAME    1 // new game event
-#define __AD_DASH_EVENT_WON_GAME    2 // won game event
-#define __AD_DASH_EVENT_UPGRADED    3 // freemium upgrade event
-#define __AD_DASH_EVENT_FIRST_RUN   4 // first run event
+#define __AD_DASH_SERVICE_URL           @"https://api-v1.addash.co/ad-srv.php"
+#define __AD_DASH_EVENT_URL             @"https://api-v1.addash.co/ad-srv.php"
+#define __AD_DASH_SERVICE_AD_BLOCK      0 // retrieve 3 ad blocks for rotation
+#define __AD_DASH_EVENT_NEW_GAME        1 // new game event
+#define __AD_DASH_EVENT_WON_GAME        2 // won game event
+#define __AD_DASH_EVENT_UPGRADED        3 // freemium upgrade event
+#define __AD_DASH_EVENT_FIRST_RUN       4 // first run event
 #define __AD_DASH_EVENT_IN_APP_PURCHASE 5 // in app purchase event
-#define __AD_DASH_SCORE_EVENT       6 // score event
-#define __AD_DASH_SERVICE_AD        7 // retrieve whole ad
-#define __AD_DASH_CUSTOM_EVENT      8 // custom event
-#define __AD_DASH_EVENT_UPGRADE     9 // regular upgrade event
-#define __AD_DASH_EVENT_APP_LINK    10 // someone clicked the 'buy app' button
-#define __AD_DASH_EVENT_LIKE_AD     11 // the user likes the ad
-#define __AD_DASH_EVENT_DISLIKE_AD  12 // the user dislikes the ad
+#define __AD_DASH_SCORE_EVENT           6 // score event
+#define __AD_DASH_SERVICE_AD            7 // retrieve whole ad
+#define __AD_DASH_CUSTOM_EVENT          8 // custom event
+#define __AD_DASH_EVENT_UPGRADE         9 // regular upgrade event
+#define __AD_DASH_EVENT_APP_LINK        10 // someone clicked the 'buy app' button
+#define __AD_DASH_EVENT_LIKE_AD         11 // the user likes the ad
+#define __AD_DASH_EVENT_DISLIKE_AD      12 // the user dislikes the ad
+#define __AD_DASH_EVENT_SESSION_START   13 // user session started
+#define __AD_DASH_EVENT_SESSION_END     14 // user session ended
 
 #define __AD_DASH_AD_ORIENTATION_LANDSCAPE_WIDTH  440
 #define __AD_DASH_AD_ORIENTATION_LANDSCAPE_HEIGHT 32
@@ -59,6 +61,13 @@ enum {
 
 + (AdDashDelegate*) getInstance;
 
+- (NSString*) getAppBundleIdentifier;
+- (NSString*) getAdvertiserIdentifier;
+- (NSString*) getApplicationPrivateKey;
+
++(BOOL) getDisplayAds;
++(void) setDisplayAds:(BOOL)display;
+
 + (void) setAdvertiserIdentifier:(NSString *)pAdvertiserIdentifier andPrivateKey:(NSString*)pApplicationPrivateKey;
 + (void) setupInParentView:(UIView*) parentView withPlacement:(int)placement;
 + (void) registerViewForAdDisplay:(UIWebView*)view inParent:(UIView*)parentView;
@@ -92,7 +101,7 @@ enum {
 // report the user dislike of an ad
 + (void) reportDislikeAd;
 // analytics session reset method
-+ (NSString*) newSession;
++ (void) newSession;
 @end
 
 // NSString* md5( NSString *str );

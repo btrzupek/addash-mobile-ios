@@ -21,7 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		80BBB8CE153E37780071DC2A /* AdDashSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A56594E614E02E5B00A21C82 /* AdDashSDK.framework */; };
+		805FD7A7154B5DA100752941 /* AdDashSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A56594E614E02E5B00A21C82 /* AdDashSDK.framework */; };
 		A565949914E0193400A21C82 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A565949814E0193400A21C82 /* UIKit.framework */; };
 		A565949B14E0193400A21C82 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A565949A14E0193400A21C82 /* Foundation.framework */; };
 		A565949D14E0193400A21C82 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A565949C14E0193400A21C82 /* CoreGraphics.framework */; };
@@ -79,7 +79,7 @@
 				A565949914E0193400A21C82 /* UIKit.framework in Frameworks */,
 				A565949B14E0193400A21C82 /* Foundation.framework in Frameworks */,
 				A565949D14E0193400A21C82 /* CoreGraphics.framework in Frameworks */,
-				80BBB8CE153E37780071DC2A /* AdDashSDK.framework in Frameworks */,
+				805FD7A7154B5DA100752941 /* AdDashSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
